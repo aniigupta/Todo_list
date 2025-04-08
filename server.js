@@ -2,10 +2,21 @@ const express = require('express');
 const app = express();
 const bodyparser = require('body-parser');
 const TaskRoutes = require('./routes/TaskRoutes');
-const mongoose = require('./connectdb');
+const mongoose = require('mongoose');
+// require('./connectDb');
 
 const PORT = process.env.PORT || 5000;
 app.use(bodyparser.json());
+
+
+const mongoURI = "mongodb+srv://aniket_1234:aniket%401234@cluster0.ta8lnc3.mongodb.net/Todo_List?retryWrites=true&w=majority"
+
+mongoose.connect(mongoURI)
+    .then(() => console.log('✅ Connected to MongoDB Atlas'))
+    .catch(err => {
+        console.error('MongoDB connection error: ', err);
+        process.exit(1);
+    });
 
 app.use('/api/task', TaskRoutes);
 
