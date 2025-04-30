@@ -2,19 +2,27 @@ const Task = require('../Model/Note');
 
 exports.createTask = async (req, res) => {
     try {
-        const { title, taskDescription, taskId } = req.body;
-        //validate the request
+        const { title, task, taskId } = req.body; // Use 'task' instead of 'taskDescription'
+
+        // Validate the request
         if (!title) {
             return res.status(400).json({ message: "Title is required and cannot be empty" });
         }
+        if (!task) {
+            return res.status(400).json({ message: "Task description is required and cannot be empty" });
+        }
+
         // Check if a task with the same title already exists
         const existingTask = await Task.findOne({ title });
         if (existingTask) {
             return res.status(400).json({ message: "A task with this title already exists" });
         }
-        const newTask = new Task({ title, task: taskDescription, taskId });
+
+        // Create a new task
+        const newTask = new Task({ title, task, taskId });
         await newTask.save();
-        res.status(200).json({ message: "task created", Task: newTask });
+
+        res.status(201).json({ message: "Task created", Task: newTask }); // Use 201 for resource creation
     } catch (err) {
         res.status(500).json({ message: 'Error', error: err.message });
     }
@@ -84,10 +92,10 @@ exports.searchTasks = async (req, res) => {
         }
         const results = await Task.find({
             $or: [
-              { title: { $regex: q, $options: 'i' } },
-              { task: { $regex: q, $options: 'i' } }
+                { title: { $regex: q, $options: 'i' } },
+                { task: { $regex: q, $options: 'i' } }
             ]
-          });
+        });
         res.status(200).json({ results });
     } catch (err) {
         res.status(500).json({ message: 'error', error: err.message });

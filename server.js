@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyparser = require('body-parser');
 const TaskRoutes = require('./routes/TaskRoutes');
+const userRoutes = require('./routes/userRoutes');
 const mongoose = require('mongoose');
 // require('./connectDb');
 
@@ -19,6 +20,7 @@ mongoose.connect(mongoURI)
     });
 
 app.use('/api/task', TaskRoutes);
+app.use('/api/user', userRoutes);
 
 app.listen(PORT, () => {
     console.log(`✅ Server is running ${PORT}`);
