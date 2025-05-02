@@ -1,5 +1,6 @@
-const User = require("../Model/User");
-const bcrypt = require("bcrypt");
+const Jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../Model/User');
 
 module.exports.register = async (req, res) => {
     try {
@@ -26,7 +27,7 @@ module.exports.register = async (req, res) => {
 
 module.exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body; 
+        const { email, password } = req.body;
 
         if (!email || !password) {
             return res.status(403).json({ message: "All fields are required" });
@@ -37,13 +38,28 @@ module.exports.login = async (req, res) => {
             return res.status(403).json({ message: "Incorrect email or password" });
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password); 
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
             return res.status(403).json({ message: "Incorrect email or password" });
         }
 
-        return res.status(200).json({ message: `Login successful. Welcome back, ${user.name}` });
+        const token = await Jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
+        return res
+            .status(200)
+            .cookie("token", token, {
+                httpOnly: true,
+                sameSite: "strict",
+                maxAge: 24 * 60 * 60 * 1000
+            })
+            .json({ message: `Login successful. Welcome back, ${user.name}` });
+
     } catch (error) {
         return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
+
