@@ -1,8 +1,8 @@
-const Jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const User = require('../Model/User');
+import Jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import User from '../Model/User.js';
 
-module.exports.register = async (req, res) => {
+export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
@@ -11,7 +11,6 @@ module.exports.register = async (req, res) => {
         }
 
         const existingUser = await User.findOne({ email });
-
         if (existingUser) {
             return res.status(403).json({ message: "User already exists" });
         }
@@ -25,7 +24,7 @@ module.exports.register = async (req, res) => {
     }
 };
 
-module.exports.login = async (req, res) => {
+export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -63,3 +62,10 @@ module.exports.login = async (req, res) => {
     }
 };
 
+export const Logout = async (_, res) => {
+    try {
+        return res.status(200).cookie("token", " ", { maxAge: 0 }).json({ message: "User logout successfully" });
+    } catch (err) {
+        console.log(error);
+    }
+};

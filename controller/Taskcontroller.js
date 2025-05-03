@@ -1,10 +1,9 @@
-const Task = require('../Model/Note');
+import Task from '../Model/Note.js';
 
-exports.createTask = async (req, res) => {
+export const createTask = async (req, res) => {
     try {
-        const { title, task, taskId } = req.body; // Use 'task' instead of 'taskDescription'
+        const { title, task, taskId } = req.body;
 
-        // Validate the request
         if (!title) {
             return res.status(400).json({ message: "Title is required and cannot be empty" });
         }
@@ -12,23 +11,21 @@ exports.createTask = async (req, res) => {
             return res.status(400).json({ message: "Task description is required and cannot be empty" });
         }
 
-        // Check if a task with the same title already exists
         const existingTask = await Task.findOne({ title });
         if (existingTask) {
             return res.status(400).json({ message: "A task with this title already exists" });
         }
 
-        // Create a new task
         const newTask = new Task({ title, task, taskId });
         await newTask.save();
 
-        res.status(201).json({ message: "Task created", Task: newTask }); // Use 201 for resource creation
+        res.status(201).json({ message: "Task created", Task: newTask });
     } catch (err) {
         res.status(500).json({ message: 'Error', error: err.message });
     }
 };
 
-exports.getAllTasks = async (req, res) => {
+export const getAllTasks = async (req, res) => {
     try {
         const tasks = await Task.find();
         res.status(200).json({ tasks });
@@ -37,12 +34,12 @@ exports.getAllTasks = async (req, res) => {
     }
 };
 
-exports.deleteTask = async (req, res) => {
+export const deleteTask = async (req, res) => {
     const { id } = req.params;
     try {
         const task = await Task.findByIdAndDelete(id);
         if (!task) {
-            return res.status(404).json({ messgae: 'task not found' });
+            return res.status(404).json({ message: 'task not found' });
         }
         res.status(200).json({ message: 'task deleted' });
     } catch (err) {
@@ -50,7 +47,7 @@ exports.deleteTask = async (req, res) => {
     }
 };
 
-exports.updateTask = async (req, res) => {
+export const updateTask = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     try {
@@ -59,13 +56,32 @@ exports.updateTask = async (req, res) => {
         }
         const UpdateTask = await Task.findByIdAndUpdate(id, updates, { new: true });
         if (!UpdateTask) {
-            return res.status(404).json({ messgae: 'task not found' });
+            return res.status(404).json({ message: 'task not found' });
         }
         res.status(200).json({ message: 'task updated' });
     } catch (err) {
         res.status(500).json({ message: 'error', error: err.message });
     }
-}
+};
+
+export const searchTasks = async (req, res) => {
+    const { q } = req.query;
+    try {
+        if (!q) {
+            return res.status(400).json({ message: "query is required" });
+        }
+        const results = await Task.find({
+            $or: [
+                { title: { $regex: q, $options: 'i' } },
+                { task: { $regex: q, $options: 'i' } }
+            ]
+        });
+        res.status(200).json({ results });
+    } catch (err) {
+        res.status(500).json({ message: 'error', error: err.message });
+    }
+};
+
 
 // for full word search
 
@@ -84,23 +100,7 @@ exports.updateTask = async (req, res) => {
 
 
 // for partial  word search combination does not availabe in mongodb
-exports.searchTasks = async (req, res) => {
-    const { q } = req.query;
-    try {
-        if (!q) {
-            return res.status(400).json({ message: "query is required" });
-        }
-        const results = await Task.find({
-            $or: [
-                { title: { $regex: q, $options: 'i' } },
-                { task: { $regex: q, $options: 'i' } }
-            ]
-        });
-        res.status(200).json({ results });
-    } catch (err) {
-        res.status(500).json({ message: 'error', error: err.message });
-    }
-}
+
 
 
 /*

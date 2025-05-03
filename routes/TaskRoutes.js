@@ -1,11 +1,17 @@
-const express = require('express');
-const router= express.Router();
-const Taskcontroller = require('../controller/Taskcontroller');
+import express from 'express';
+import { createTask, getAllTasks, updateTask, deleteTask, searchTasks } from '../controller/Taskcontroller.js';
+import isAuthenticated from '../middleware/isAuthenticated.js';
 
-router.post('/create-task',Taskcontroller.createTask); //improve naming use camelCase or create-task 
-router.get('/getallTasks',Taskcontroller.getAllTasks);
-router.put('/update/:id',Taskcontroller.updateTask);//  /api/task/update/:id
-router.delete('/delete/:id',Taskcontroller.deleteTask); // /api/task/delete/:id
-router.get('/search',Taskcontroller.searchTasks);
+const router = express.Router();
 
-module.exports = router;
+// Protect all routes with authentication
+router.use(isAuthenticated);
+
+// Routes
+router.post('/create-task', createTask);
+router.get('/getallTasks', getAllTasks);
+router.put('/update/:id', updateTask);
+router.delete('/delete/:id', deleteTask);
+router.get('/search', searchTasks);
+
+export default router;
