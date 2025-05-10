@@ -65,7 +65,7 @@ export const Login = async (req, res) => {
 export const Logout = async (_, res) => {
     try {
         return res.status(200).cookie("token", " ", { maxAge: 0 }).json({ message: "User logout successfully" });
-    } catch (err) {
+    } catch (error) {
         console.log(error);
     }
 };

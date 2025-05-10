@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from 'sonner';
 
 import Login from './pages/Login';
 import Home from './pages/Home'; 
@@ -18,7 +19,10 @@ const appRouter = createBrowserRouter([
 
 const App: React.FC = () => {
   return (
-    <RouterProvider router={appRouter} />
+    <>
+      <Toaster position="top-center" richColors />
+      <RouterProvider router={appRouter} />
+    </>
   );
 };
 

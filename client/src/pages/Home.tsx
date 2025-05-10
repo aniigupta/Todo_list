@@ -1,21 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
-import { Toaster } from "sonner";
+import { Toaster,toast } from "sonner";
 import Navbar from "./Navbar";
 import { Button } from "@/components/ui/button";
 
 
 const Home = () => {
     const [title, setTitle] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
+    const [task, setTask] = useState<string>('');
     const [taskId, setTaskId] = useState<string>('');
-   const {toast} = require('sonner');
   
     const addTodoHandler = async () => {
       try {
         const res = await axios.post(
           'http://localhost:5000/api/task/create-task',
-          { title, description,taskId},
+          {title,task,taskId},
           {
             headers: {
               'Content-Type': 'application/json',
@@ -48,8 +47,8 @@ const Home = () => {
           />
   
           <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
             placeholder="Add a description for your todo..."
             className="w-1/4 p-2 border border-gray-300 rounded"
           />
