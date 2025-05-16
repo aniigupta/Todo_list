@@ -12,6 +12,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const mongoURI = process.env.MONGO_URI;
 
 
 app.use(express.json());
@@ -22,10 +23,6 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true, 
 }));
-
-
-const mongoURI = "mongodb+srv://aniket_1234:aniket%401234@cluster0.ta8lnc3.mongodb.net/Todo_List?retryWrites=true&w=majority";
-
 
 mongoose.connect(mongoURI)
   .then(() => console.log('✅ Connected to MongoDB Atlas'))
